@@ -1,5 +1,5 @@
 process.on('unhandledRejection', console.error);
-//import files
+
 const botconfig = require('C:/Users/korea/source/repos/ConsoleApplication1/discord/other bots/Badge_Bot/settings.json');
 const Discord = require('discord.js');
 const { Client, Util} = require('discord.js');
@@ -8,20 +8,18 @@ const fs = require('fs');
 const iheart = require('iheart');
 const ytdl = require('ytdl-core');
 const YouTube = require('simple-youtube-api');
-const youtube = new YouTube('AIzaSyATF9uLZcphTM0P2SwCRw4qMbgeX_KJmW4');
+const youtube = new YouTube(botconfig.yt_api_key);
 const queue = new Map();
 
-//when it disconnects will first given a warning
 bot.on('warn', console.warn);
-//then gives the error in the console
+
 bot.on('error', console.error);
-//then returns a message saying that it has disconnected
+
 bot.on('disconnect', () => console.log('I just disconnected'));
-//then when it reconnects, it will say that it reconnected and was successful.
+
 bot.on('reconnecting', () => console.log('I am reconnecting now!'));
 
 //Command handler
-//this is just here just in case we want more commands
 bot.commands = new Discord.Collection();
 
 const bot_controller = botconfig.bot_controller;
@@ -40,7 +38,6 @@ fs.readdir("./commands/", (err, files) =>{
   });
 });
 
-//when it runs and it was successful, it will run this
 bot.on("ready", async () =>{
   console.log(`|-------------------------------------------|`);
   let prefix = botconfig.prefix;
@@ -57,15 +54,15 @@ bot.on("ready", async () =>{
 //-------------------------
   //let adding = true;
   let adding = false;
-  let being_added = "help";
-  let section = "help";
+  let being_added = "";
+  let section = "";
   console.log(`|         Adding Commands: ${adding}            `);
   console.log(`|         Being added: ${being_added}                     `);
   console.log(`|         Section: ${section}                         `);
   console.log(`|-------------------------------------------|`);
 //--------------------------
-let newCommand = true;
-//let newCommand = false;
+//let newCommand = true;
+let newCommand = false;
   console.log(`|         newCommand: ${newCommand}`);
   console.log(`|         Just Added: ${being_added}`);
   console.log(`|         Section: ${section}`);
@@ -126,12 +123,11 @@ bot.on("guildMemberAdd", async member =>{
       channel.send(welcomeEmbed);
       //channel.send(`Welcome to Pokefinium ${member} Please take a look at <#506646749239050246> and other areas of importance. Have fun and I hope you find a home here with us!`)
 });
-//this is the message event, any command that is too short or can not be put in a separate file goes in here.
 bot.on('message', async message =>{
   if(message.author.bot) return;
   if(message.channel.type === 'dm') return;
 
-  let prefix = `b!`;
+  let prefix = botconfig.prefix;
   let messageArray = message.content.split(" ");
   let cmd = messageArray[0];
   let args = messageArray.slice(1);
@@ -170,6 +166,12 @@ bot.on('message', async message =>{
     const serverQueue = queue.get(message.guild.id);
 
     if(cmd === `${prefix}p` || cmd === `${prefix}play`){
+      let pEmbed = new Discord.RichEmbed()
+        .setTitle(`INVALID USEAGE`)
+        .setAuthor(message.author.username)
+        .addField('Correct Formatting', `*${prefix}p <song name>* or *${prefix}play <song name>* `)
+        .addField('Example:', `*${prefix}p goddess chrome spark* or *${prefix}play goddess chrome spark*`);
+      if(!args[0])return message.channel.send(pEmbed);
       const voiceChannel = message.member.voiceChannel;
       if(!voiceChannel) return message.channel.send("I'm sorry, but you need to be in a voice channel to play music");
       const permissions = voiceChannel.permissionsFor(bot.user);
@@ -213,7 +215,14 @@ bot.on('message', async message =>{
     } else if(cmd === `${prefix}vol` || cmd === `${prefix}volume`){
       if(!message.member.voiceChannel) return message.channel.send('You are not in a voice channel');
       if (!serverQueue) return message.channel.send('There is nothing playing.');
-      if (!args[0]) return message.channel.send(`The current volume is: **${serverQueue.volume}**`);
+      let volEmbed = new Discord.RichEmbed()
+        .setTitle(`Volume`)
+        .setAuthor(message.author.username)
+        .addField('Current Volume', ` **${serverQueue.volume}**`)
+        .addField('To Change The Volume', `*${prefix}vol [1-5]* or *${prefix}volume [1-5]`)
+        .addField('Example:', `*${prefix}vol 3* or *${prefix}volume 3*`);
+
+      if(!args[0])return message.channel.send(volEmbed);
       serverQueue.volume = args[0];
       serverQueue.connection.dispatcher.setVolumeLogarithmic(args[0] / 100);
       return message.channel.send(`I set the volume to: **${args[0]}**`);
@@ -225,10 +234,15 @@ bot.on('message', async message =>{
       let index = 0;
       let queueEmbed = new Discord.RichEmbed()
       .setTitle(`Playing ${serverQueue.songs[0].title}`)
-      .addField(`**Queuing**:`, serverQueue.songs.map(song => `**${++index} -** ${song.title}`).join('\n'));
+      .addField(`**Queuing**:`, serverQueue.songs.map(song => `Queuing Number: **${++index} -** ${song.title}`).join('\n'));
       message.channel.send(queueEmbed);
     }
     else if (cmd === `${prefix}remove` || cmd === `${prefix}r`){
+      let removeInfo = new Discord.RichEmbed()
+        .setTitle(`~INVALID USAGE~`)
+        .addField(`Correct Formatting`, `*${prefix}remove <Song Queuing number>* or *${prefix}r <Song Queuing number>*`)
+        .addField(`Example`, `*${prefix}remove 3* or *${prefix}r 3*`);
+      if(!args[0])return message.channel.send(removeInfo);
           let index = 0;
           let toSkip = args[0];
           toSkip = Math.min(toSkip, serverQueue.songs.length);
@@ -266,13 +280,9 @@ bot.on('message', async message =>{
       message.channel.send(`Searching on IHeart radio's playlist for ${args[0]}`);
       const voiceChannel = message.member.voiceChannel;
         var connection = await voiceChannel.join();
-        // search for a station, pick the first match
         const matches = await iheart.search(args[0]);
         const station = matches.stations[0];
 
-        // finally you can get the source stream URL which can
-        // be requested over HTTP and fed into an audio decoder,
-        // or whatever your application does with it…
         const url = await iheart.streamURL(station);
          const dispatcher = connection.playStream(url);
         console.log(url);
