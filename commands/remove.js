@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const botconfig = require('C:/Users/korea/source/repos/ConsoleApplication1/discord/other bots/Badge_Bot/settings.json')
+const botconfig = require('../settings.json')
 module.exports.run = async(bot, message, args) =>{
   let prefix = botconfig.prefix;
   let infoEmbed = new Discord.RichEmbed()

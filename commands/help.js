@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const botconfig = require('C:/Users/korea/source/repos/ConsoleApplication1/discord/other bots/Badge_Bot/settings.json');
+const botconfig = require('../settings.json');
 
 exports.run = (client, message, args, tools) =>{
   let prefix = botconfig.prefix;
