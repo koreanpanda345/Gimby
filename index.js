@@ -66,7 +66,7 @@ let newCommand = false;
   console.log(`|         newCommand: ${newCommand}`);
   console.log(`|         Just Added: ${being_added}`);
   console.log(`|         Section: ${section}`);
-  console.log(`|-------------------------------------------|`)
+  console.log(`|-------------------------------------------|`);
 //-------------------------
   //let update = true;
   let update = false;
@@ -75,8 +75,17 @@ let newCommand = false;
   console.log(`|         Updated: ${update}                     `);
   console.log(`|         Update in: ${updated}                  `);
   console.log(`|         Updated Command: ${prefix}${updatedCommand}      `);
-  console.log(`|-------------------------------------------|`)
+  console.log(`|-------------------------------------------|`);
 //-------------------------
+  //let functionUpdate = true;
+  let functionUpdate = false;
+  let addingFunction = "";
+  let addingIn = "";
+  console.log(`|         Function Update: ${functionUpdate}`);
+  console.log(`|         Adding Function: ${addingFunction}`);
+  console.log(`|         Adding In: ${addingIn}`);
+  console.log(`|-------------------------------------------|`);
+//-----------------------
 
     if(update === true){
       bot.user.setActivity(`Update on ${updated}, check command ${prefix}${updatedCommand}`);//updated commands stats
@@ -105,6 +114,20 @@ let newCommand = false;
     .then(console.log)
     .catch(console.error);
   }
+  else if(functionUpdate === true){
+    if(addingIn === ""){
+      bot.user.setActivity(`Getting Something New. Its going to be ${addingFunction}.`, {type: `WATCHING`});
+      bot.user.setStatus("dnd")
+      .then(console.log)
+      .catch(console.error);
+    }
+    else{
+      bot.user.setActivity(`Getting something new. Its ${addingFunction} in the ${addingIn}.`, {type: "WATCHING"});
+      bot.user.setStatus("dnd")
+      .then(console.log)
+      .catch(console.error);
+    }
+  }
   else{
     bot.user.setActivity(`${prefix}help`, {type: `WATCHING`});//standard stats
     bot.user.setStatus("online")
@@ -127,7 +150,7 @@ bot.on('message', async message =>{
   if(message.author.bot) return;
   if(message.channel.type === 'dm') return;
 
-  let prefix = botconfig.prefix;
+  let prefix = "badge!";
   let messageArray = message.content.split(" ");
   let cmd = messageArray[0];
   let args = messageArray.slice(1);
