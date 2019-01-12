@@ -31,110 +31,95 @@ fs.readdir("./commands/", (err, files) =>{
     console.log("Couldn't Find Commands");
     return;
   }
+  console.log(`|-------------------------------------------|`);
   jsfile.forEach((f, i) =>{
     let props = require(`./commands/${f}`);
-    console.log(`${f} loaded!`);
+    console.log(`|     ${f} loaded!`);
+    console.log(`|-------------------------------------------|`);
     bot.commands.set(props.help.name, props);
   });
 });
 
 bot.on("ready", async () =>{
-  console.log(`|-------------------------------------------|`);
   let prefix = botconfig.prefix;
-//--------------------------
-//let newCommands = true;
-  let newCommands = false;
-  console.log(`|         New Commands: ${newCommands}               `);
-  console.log(`|-------------------------------------------|`);
-//--------------------------
-  //let being_work_on = true;
-  let being_work_on = false;
-  console.log(`|         Being work on: ${being_work_on}             `);
-  console.log(`|-------------------------------------------|`);
-//-------------------------
-  //let adding = true;
-  let adding = false;
-  let being_added = "";
-  let section = "";
-  console.log(`|         Adding Commands: ${adding}            `);
-  console.log(`|         Being added: ${being_added}                     `);
-  console.log(`|         Section: ${section}                         `);
-  console.log(`|-------------------------------------------|`);
-//--------------------------
-//let newCommand = true;
-let newCommand = false;
-  console.log(`|         newCommand: ${newCommand}`);
-  console.log(`|         Just Added: ${being_added}`);
-  console.log(`|         Section: ${section}`);
-  console.log(`|-------------------------------------------|`);
-//-------------------------
-  //let update = true;
-  let update = false;
-  let updated = "";
-  let updatedCommand = "";
-  console.log(`|         Updated: ${update}                     `);
-  console.log(`|         Update in: ${updated}                  `);
-  console.log(`|         Updated Command: ${prefix}${updatedCommand}      `);
-  console.log(`|-------------------------------------------|`);
-//-------------------------
-  //let functionUpdate = true;
-  let functionUpdate = false;
-  let addingFunction = "";
-  let addingIn = "";
-  console.log(`|         Function Update: ${functionUpdate}`);
-  console.log(`|         Adding Function: ${addingFunction}`);
-  console.log(`|         Adding In: ${addingIn}`);
-  console.log(`|-------------------------------------------|`);
-//-----------------------
+  let status = "updating";//update, updating, fixing, new, 
+  let command = "";
+  let functions = "";
+  
+  if(status === "update"){
+      console.log(`|-------------------------------------------|`);
+      if(command === ""){
+          console.log(`|Function: ${functions}`);
+          console.log(`|-------------------------------------------|`);
+          bot.user.setActivity(`Gimby has gotten a update. The update is ${functions}.`, {type: "WATCHING"});
+          bot.user.setStatus('online');
+      }
+      else if(functions === ""){
+          console.log(`|Command: ${command}`);
+          console.log(`|-------------------------------------------|`);
+          bot.user.setActivity(`Gimby has gotten a update. The update is ${prefix}${commands}`, {type: "WATCHING"});
+          bot.user.setStatus("online");
+      }
+      else if(functions === "" && command === ""){
+          console.log("|");
+          console.log(`|-------------------------------------------|`);
+          bot.user.setActivity(`Gimby has gotten a update.`, {type: "WATCHING"});
+          bot.user.setStatus("online");
+      }
+      else{
+          console.log(`|Command: ${command}`);
+          console.log(`|Function: ${functions}`);
+          console.log(`|-------------------------------------------|`);
+          bot.user.setActivity(`Gimby has gotten a update. The update is ${prefix}${commands}, and ${functions}`, {type: "WATCHING"});
+          bot.user.setStatus("online");
+      }
+  }
+  else if(status === "updating"){
+      console.log(`|-------------------------------------------|`);
+      console.log(`|Being worked on: True`);
+      console.log(`|-------------------------------------------|`);
+      bot.user.setActivity(`Gimby is being worked on. please wait till you don't see this message.`, {type: "WATCHING"});
+      bot.user.setStatus("dnd");
+  }
+  else if(status === "Fixing"){
+      console.log(`|-------------------------------------------|`);
+      console.log(`|Being worked on: True`);
+      console.log(`|-------------------------------------------|`);
+      bot.user.setActivity(`Gimby is being worked on. please wait till you don't see this message.`, {type: "WATCHING"});
+      bot.user.setStatus("dnd");
+  }
+  else if(status === "new"){
+      console.log(`|-------------------------------------------|`);
+      if(command === ""){
+          console.log(`|Function: ${functions}`);
+          console.log(`|-------------------------------------------|`);
+          bot.user.setActivity(`Gimby has gotten a new Function. Which is ${functions}.`, {type: "WATCHING"});
+          bot.user.setStatus('online');
+      }
+      else if(functions === ""){
+          console.log(`|Command: ${command}`);
+          console.log(`|-------------------------------------------|`);
+          bot.user.setActivity(`Gimby has gotten a new command. The new command is ${prefix}${commands}`, {type: "WATCHING"});
+          bot.user.setStatus("online");
+      }
+      else{
+          console.log(`|Command: ${command}`);
+          console.log(`|Function: ${functions}`);
+          console.log(`|-------------------------------------------|`);
+          bot.user.setActivity(`Gimby has gotten a new command. The new command is ${prefix}${commands}, and a new function which is ${functions}`, {type: "WATCHING"});
+          bot.user.setStatus("online");
+  }
 
-    if(update === true){
-      bot.user.setActivity(`Update on ${updated}, check command ${prefix}${updatedCommand}`);//updated commands stats
-      bot.user.setStatus("online")
-      .then(console.log)
-      .catch(console.error);
-  } else if(adding === true){
-    bot.user.setActivity(`Gimby is getting a new command: ${prefix}${being_added} to ${section}. Please wait, till you do not see this status.thank you.`, {type: `WATCHING`});
-    bot.user.setStatus("dnd")
-    .then(console.log)
-    .catch(console.error);
-  }else if(being_work_on === true){
-    bot.user.setActivity(`Gimby is being worked on, please wait, till you don't not see this status. thank you`, {type: `WATCHING`});//being worked on status
-    bot.user.setStatus("dnd")
-    .then(console.log)
-    .catch(console.error);
-  }else if(newCommand === true){
-    bot.user.setActivity(`Gimby has New Commands. check out ${section} in the help command and try out ${prefix}${being_added}!!!`, {type: `WATCHING`});
-    bot.user.setStatus("online")
-    .then(console.log)
-    .catch(console.error);
-  }
-  else if(newCommands === true){
-    bot.user.setActivity(`New Commands check ${prefix}help to see them.`, {type: `WATCHING`});//new commands stats
-    bot.user.setStatus("online")
-    .then(console.log)
-    .catch(console.error);
-  }
-  else if(functionUpdate === true){
-    if(addingIn === ""){
-      bot.user.setActivity(`Getting Something New. Its going to be ${addingFunction}.`, {type: `WATCHING`});
-      bot.user.setStatus("dnd")
-      .then(console.log)
-      .catch(console.error);
-    }
-    else{
-      bot.user.setActivity(`Getting something new. Its ${addingFunction} in the ${addingIn}.`, {type: "WATCHING"});
-      bot.user.setStatus("dnd")
-      .then(console.log)
-      .catch(console.error);
-    }
   }
   else{
-    bot.user.setActivity(`${prefix}help`, {type: `WATCHING`});//standard stats
-    bot.user.setStatus("online")
-    .then(console.log)
-    .catch(console.error);
+      console.log(`|-------------------------------------------|`);
+      console.log(`|default`);
+      console.log(`|-------------------------------------------|`);
+      bot.user.setActivity(`panda!help`);
+      bot.user.setStatus("online");
   }
-  console.log(`I am ready`);
+  console.log(`Gimby is in ${bot.guilds.size} servers, ${bot.channels.size} channels, and ${bot.users.size} users.`);
+  
 });
 bot.on("guildMemberAdd", async member =>{
     const channel = member.guild.channels.find(ch => ch.name === 'general');
@@ -142,7 +127,7 @@ bot.on("guildMemberAdd", async member =>{
       let welcomeEmbed = new Discord.RichEmbed()
       .setTitle(`Welcome New Member`)
       .setColor(0x43f47a)
-      .setDescription(`Welcome to Pokefinium ${member} Please take a look at <#506646749239050246> and other areas of importance. Have fun and I hope you find a home here with us!`);
+      .setDescription(`Welcome to iG Pokefinium ${member} Please take a look at <#506646749239050246> and other areas of importance. If you would like to join the Pokemon League, then please dm or @ <@147230160016375808> Have fun and I hope you find a home here with us!`);
       channel.send(welcomeEmbed);
       //channel.send(`Welcome to Pokefinium ${member} Please take a look at <#506646749239050246> and other areas of importance. Have fun and I hope you find a home here with us!`)
 });
