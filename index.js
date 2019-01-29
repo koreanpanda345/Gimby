@@ -42,7 +42,7 @@ fs.readdir("./commands/", (err, files) =>{
 
 bot.on("ready", async () =>{
   let prefix = botconfig.prefix;
-  let status = "updating";//update, updating, fixing, new, 
+  let status = "";//update, updating, fixing, new, 
   let command = "";
   let functions = "";
   
@@ -115,7 +115,7 @@ bot.on("ready", async () =>{
       console.log(`|-------------------------------------------|`);
       console.log(`|default`);
       console.log(`|-------------------------------------------|`);
-      bot.user.setActivity(`panda!help`);
+      bot.user.setActivity(`badge!help`);
       bot.user.setStatus("online");
   }
   console.log(`Gimby is in ${bot.guilds.size} servers, ${bot.channels.size} channels, and ${bot.users.size} users.`);
@@ -127,7 +127,7 @@ bot.on("guildMemberAdd", async member =>{
       let welcomeEmbed = new Discord.RichEmbed()
       .setTitle(`Welcome New Member`)
       .setColor(0x43f47a)
-      .setDescription(`Welcome to iG Pokefinium ${member} Please take a look at <#506646749239050246> and other areas of importance. If you would like to join the Pokemon League, then please dm or @ <@147230160016375808> Have fun and I hope you find a home here with us!`);
+      .setDescription(`Welcome to iG Pokefinium ${member} Please take a look at <#506646749239050246> and other areas of importance. If you would like to join the Pokemon League, then please dm or @ <@147230160016375808>. Also Go to <#521425848730124319> to pick your clan. Have fun and I hope you find a home here with us!`);
       channel.send(welcomeEmbed);
       //channel.send(`Welcome to Pokefinium ${member} Please take a look at <#506646749239050246> and other areas of importance. Have fun and I hope you find a home here with us!`)
 });
@@ -135,13 +135,30 @@ bot.on('message', async message =>{
   if(message.author.bot) return;
   if(message.channel.type === 'dm') return;
 
-  let prefix = "badge!";
+  let prefix = "bad!";
   let messageArray = message.content.split(" ");
   let cmd = messageArray[0];
   let args = messageArray.slice(1);
   let commandfile = bot.commands.get(cmd.slice(prefix.length));
   if(commandfile) commandfile.run(bot, message, args);
-
+  if(cmd === `${prefix}edit`){
+    let infoEmbed = new Discord.RichEmbed()
+    .setTitle('~INVALID USAGE~')
+    .addField('Correct format.', `${prefix}edit <Old Badge> <New Badge>`, false)
+    .addField('Example', `${prefix}edit 🐼 :pandacult:`);
+    if(!(args[0] || args[1])) return message.channel.send(infoEmbed);
+    if(!(message.member.roles.find(r => r.name === 'Gym Leaders') || message.author.id === '304446682081525772')) return message.channel.send('Your not a gym leader');
+    let editEmbed = new Discord.RichEmbed()
+    .setTitle('~Badge Updated~')
+    .setColor(0x42f44b)
+    .addField('Old Badge', `${args[0]}`)
+    .addField('New Badge', `${args[1]}`,true);
+    message.channel.send(editEmbed);
+    let targetBadge = message.guild.roles.find(r => r.name === `${args[0]}`);
+    targetBadge.edit({name: `${args[1]}`})
+    .then(updated => console.log)
+    .catch(console.error);
+  }
 
   if(cmd === `${prefix}ping`){
     message.channel.send(`Pong: ${bot.ping}ms`);
